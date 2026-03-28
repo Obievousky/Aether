@@ -1,6 +1,9 @@
+name: filebrowser
+
 services:
   filebrowser:
     image: filebrowser/filebrowser:latest
+    container_name: filebrowser
     ports:
       - "8080:80"
     volumes:
