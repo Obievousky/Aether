@@ -41,9 +41,11 @@ NEOFORGE_VERSION=${NEOFORGE_VERSION:-$LATEST_VERSION}
 # Memory
 read -p "Min memory (leave empty for 4G): " JAVA_MIN_MEMORY
 JAVA_MIN_MEMORY=${JAVA_MIN_MEMORY:-4G}
+[[ $JAVA_MIN_MEMORY =~ [MG]$ ]] || JAVA_MIN_MEMORY="${JAVA_MIN_MEMORY}G"
 
 read -p "Max memory (leave empty for 8G): " JAVA_MAX_MEMORY
 JAVA_MAX_MEMORY=${JAVA_MAX_MEMORY:-8G}
+[[ $JAVA_MAX_MEMORY =~ [MG]$ ]] || JAVA_MAX_MEMORY="${JAVA_MAX_MEMORY}G"
 
 # Tailscale
 read -p "Tailscale auth key: " TS_AUTHKEY
