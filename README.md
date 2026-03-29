@@ -1,4 +1,4 @@
-# Docker NeoForge Minecraft Server
+# 🎮 Docker NeoForge Minecraft Server
 
 Dockerized NeoForge Minecraft server with automatic setup, FileBrowser for mod management, and Tailscale for secure private access — no port forwarding needed.
 
@@ -12,33 +12,52 @@ Dockerized NeoForge Minecraft server with automatic setup, FileBrowser for mod m
 
 Before creating any server you need a Tailscale OAuth client secret.
 
-1. Go to [Tailscale Admin Console](https://login.tailscale.com/admin) → **Settings → OAuth Clients**
-2. Click **Generate OAuth client**
-3. Enable **Devices** scope with **Read & Write**
-4. Under tags, add `tag:minecraft`
-5. Click **Generate** and copy the secret — **you only see it once!**
+1. Go to [Tailscale Admin Console](https://login.tailscale.com/admin) → **Access Controls**
+2. Find the `tagOwners` section and add:
+```json
+"tagOwners": {
+  "tag:minecraft": ["autogroup:admin"]
+}
+```
+3. Save, then go to **Settings → OAuth Clients → Generate OAuth Client**
+4. Enable **Devices:Core** → Write and **Keys:Auth Keys** → Write
+5. Under tags, select `tag:minecraft`
+6. Click **Generate** and copy the secret — **you only see it once!**
 
 > The secret goes into `TS_AUTHKEY` when running `create-server.sh`
 
 ## Folder structure
 ```
-minecraft/
-├── create-server.sh       # Setup script
+docker-minecraft-server/
+├── create-server.sh       # Server creation script
+├── delete-server.sh       # Server deletion script
 ├── filebrowser/           # FileBrowser container
 │   ├── docker-compose.yml
 │   └── filebrowser.json
-└── template/              # Server template
+└── template/              # Server template (don't touch)
     ├── .env.example
     ├── Dockerfile
     └── docker-compose.yml
+
+~/minecraft-servers/       # Created automatically, lives outside the repo
+├── survival-server/
+├── creative-server/
+└── funky-capybara-server/
 ```
 
-## Creating a server
+## First Time Setup
 ```bash
-# Make the script executable (the first time it's run)
-chmod +x create-server.sh
+# Clone the repo
+git clone https://github.com/Obievousky/docker-minecraft-server.git
+cd docker-minecraft-server
 
-# Run it
+# Make scripts executable
+chmod +x create-server.sh
+chmod +x delete-server.sh
+```
+
+## Creating a Server
+```bash
 ./create-server.sh
 ```
 
@@ -46,20 +65,22 @@ The script will ask for:
 
 - **Server name** — leave empty for a random fun name (e.g. `funky-capybara`)
 - **NeoForge version** — leave empty to use the latest stable
-- **Min/Max memory** — defaults to 4G/8G
+- **Min memory** — defaults to 4G
+- **Max memory** — defaults to 8G
 - **Tailscale auth key** — the OAuth secret from above
 
-It will then create the server folder, write the `.env`, start FileBrowser if not already running, and boot the server.
+It will then create the server folder, write the `.env`, start FileBrowser if not already running, boot the server, and give you the option to attach to the console.
+
+## Deleting a Server
+```bash
+./delete-server.sh
+```
+
+Lists all available servers and lets you pick one or all to delete. Stops and removes all containers, images, volumes, and files. Requires typing `yes` to confirm.
 
 ## Managing Multiple Servers
 
-Just run `./create-server.sh` again with a different name. Each server is fully isolated with its own folder under `servers/` and its own Tailscale node on your tailnet.
-```
-servers/
-├── survival-server/
-├── creative-server/
-└── funky-capybara-server/
-```
+Just run `./create-server.sh` again with a different name. Each server is fully isolated with its own folder under `~/minecraft-servers/` and its own Tailscale node on your tailnet.
 
 ## Connecting to a Server
 
@@ -100,6 +121,23 @@ sudo usermod -aG docker $USER
 ```
 
 Then log out and back in for the change to take effect.
+
+### Scripts not executable
+If you see `permission denied` when running the scripts:
+```bash
+chmod +x create-server.sh
+chmod +x delete-server.sh
+```
+
+### Template folder not found
+If the script says the template folder is missing, make sure you are running the scripts from inside the `docker-minecraft-server/` folder:
+```bash
+cd docker-minecraft-server
+./create-server.sh
+```
+
+### Tailscale auth failed
+Make sure you have created the `tag:minecraft` tag in Access Controls **before** generating the OAuth client. The tag must exist first or the auth key will be invalid.
 
 ## License
 
