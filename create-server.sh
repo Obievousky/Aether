@@ -29,6 +29,17 @@ if [ -z "$SERVER_NAME" ]; then
   echo "Generated server name: $SERVER_NAME"
 fi
 
+# User
+read -p "User to run the server as (leave empty for current: $USER): " RUN_USER
+RUN_USER=${RUN_USER:-$USER}
+RUN_USER_ID=$(id -u "$RUN_USER" 2>/dev/null)
+RUN_GROUP_ID=$(id -g "$RUN_USER" 2>/dev/null)
+
+if [ -z "$RUN_USER_ID" ]; then
+  echo "ERROR: User '$RUN_USER' not found!"
+  exit 1
+fi
+
 # Fetch latest stable NeoForge version
 echo ""
 echo "Fetching latest NeoForge version..."
@@ -82,6 +93,10 @@ mkdir -p "$TARGET"
 cp "$TEMPLATE_DIR/Dockerfile" "$TARGET/Dockerfile"
 cp "$TEMPLATE_DIR/docker-compose.yml" "$TARGET/docker-compose.yml"
 
+# Pre-create data folders and set ownership
+mkdir -p "$TARGET/mods" "$TARGET/config" "$TARGET/world" "$TARGET/logs"
+chown -R "$RUN_USER" "$TARGET"
+
 # Write .env
 cat > "$TARGET/.env" <<EOF
 NEOFORGE_VERSION=${NEOFORGE_VERSION}
@@ -89,6 +104,8 @@ SERVER_NAME=${SERVER_NAME}
 JAVA_MIN_MEMORY=${JAVA_MIN_MEMORY}
 JAVA_MAX_MEMORY=${JAVA_MAX_MEMORY}
 TS_AUTHKEY=${TS_AUTHKEY}
+USER_ID=${RUN_USER_ID}
+GROUP_ID=${RUN_GROUP_ID}
 EOF
 
 echo "✓ Server created at $TARGET"

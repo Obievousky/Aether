@@ -104,3 +104,12 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  ✓ Done!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+```
+
+---
+
+**`.gitignore`**
+```
+servers/
+filebrowser/filebrowser.db
+todo.txt

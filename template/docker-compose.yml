@@ -24,6 +24,8 @@ services:
       context: .
       args:
         NEOFORGE_VERSION: ${NEOFORGE_VERSION}
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
     env_file:
       - .env
     network_mode: service:tailscale

@@ -10,4 +10,7 @@ services:
       - /home/${USER}/minecraft-servers:/srv
       - ./filebrowser.db:/database.db
       - ./filebrowser.json:/.filebrowser.json
+    environment:
+      - PUID=${UID}
+      - PGID=${GID}
     restart: unless-stopped
