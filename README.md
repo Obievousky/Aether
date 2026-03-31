@@ -142,7 +142,7 @@ cd docker-minecraft-server
 ### Tailscale auth failed
 Make sure you have created the `tag:minecraft` tag in Access Controls **before** generating the OAuth client. The tag must exist first or the auth key will be invalid.
 
-## Acknowledgements
+## Disclosure
 
 This project was built with the help of [Claude](https://claude.ai)
 ## License
