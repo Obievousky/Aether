@@ -56,7 +56,7 @@ docker-minecraft-server/
     ├── .env               # Your servers .env
     ├── Dockerfile
     ├── docker-compose.yml
-    ├── supervisord.conf
+    └── supervisord.conf
 ```
 
 ## Creating a Server
