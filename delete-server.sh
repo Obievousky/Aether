@@ -75,13 +75,28 @@ for SERVER in "${TO_DELETE[@]}"; do
 
   echo "  Deleting $SERVER..."
 
-  # Remove Tailscale device from tailnet
-  TS_CONTAINER="tailscale-${SERVER_NAME}"
-  if docker ps --format '{{.Names}}' | grep -q "^${TS_CONTAINER}$"; then
-    echo "  Removing Tailscale device..."
-    docker exec "$TS_CONTAINER" tailscale logout 2>/dev/null
-    sleep 2
+TS_CONTAINER="tailscale-${SERVER_NAME}"
+
+if docker ps --format '{{.Names}}' | grep -q "^${TS_CONTAINER}$"; then
+  echo "  Removing Tailscale device..."
+
+  success=false
+  for i in {1..3}; do
+    if docker exec "$TS_CONTAINER" tailscale logout; then
+      success=true
+      break
+    fi
+    sleep 1
+  done
+
+  if [ "$success" = true ]; then
+    echo "  ✓ Tailscale device removed!"
+  else
+    echo "  WARNING: Failed to remove Tailscale device. It may still appear in your tailnet dashboard."
   fi
+
+  sleep 2
+fi
 
   # Stop and remove containers, images and volumes
   cd "$TARGET" && docker compose down --rmi all --volumes 2>/dev/null
