@@ -101,14 +101,16 @@ fi
 echo "✓ Server started!"
 echo ""
 echo -n "Waiting for Tailscale to authenticate"
-for i in {1..3}; do
+for i in {1..30}; do
+  if docker exec "tailscale-${SERVER_NAME}" tailscale status >/dev/null 2>&1; then
+    echo " ✓"
+    break
+  fi
   echo -n "."
   sleep 1
-  echo -n "."
-  sleep 1
-  echo -n "."
-  sleep 1
-  echo -ne "\b\b\b   \b\b\b"
+  if (( i % 3 == 0 )); then
+    echo -ne "\b\b\b   \b\b\b"
+  fi
 done
 echo ""
 

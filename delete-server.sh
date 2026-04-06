@@ -79,23 +79,16 @@ TS_CONTAINER="tailscale-${SERVER_NAME}"
 
 if docker ps --format '{{.Names}}' | grep -q "^${TS_CONTAINER}$"; then
   echo "  Removing Tailscale device..."
-
-  success=false
-  for i in {1..3}; do
-    if docker exec "$TS_CONTAINER" tailscale logout >/dev/null 2>&1; then
-      success=true
-      break
-    fi
+  for i in {1..4}; do
+    docker exec "$TS_CONTAINER" tailscale logout >/dev/null 2>&1 && break
     sleep 1
   done
 
-  if [ "$success" = true ]; then
-    echo "  ✓ Tailscale device removed!"
-  else
+  if docker exec "$TS_CONTAINER" tailscale status >/dev/null 2>&1; then
     echo "  WARNING: Failed to remove Tailscale device. It may still appear in your tailnet dashboard."
+  else
+    echo "  ✓ Tailscale device removed!"
   fi
-
-  sleep 2
 fi
 
   # Stop and remove containers, images and volumes
