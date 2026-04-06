@@ -18,11 +18,13 @@ Before creating any server you need a Tailscale OAuth client secret.
 
 1. Go to [Tailscale Admin Console](https://login.tailscale.com/admin) → **Access Controls**
 2. Find the `tagOwners` section and add:
+
 ```json
 "tagOwners": {
   "tag:minecraft": ["autogroup:admin"]
 }
 ```
+
 3. Save, then go to **Settings → OAuth Clients → Generate OAuth Client**
 4. Enable **Devices:Core** → Write and **Keys:Auth Keys** → Write
 5. Under tags, select `tag:minecraft`
@@ -31,6 +33,7 @@ Before creating any server you need a Tailscale OAuth client secret.
 > The secret goes into `TS_AUTHKEY` when running `create-server.sh`
 
 ## First Time Setup
+
 ```bash
 # Clone the repo
 git clone https://github.com/Obievousky/aether.git
@@ -42,21 +45,26 @@ chmod +x delete-server.sh
 ```
 
 ## Folder Structure
+
+```
 aether/
 ├── create-server.sh       # Server creation script
 ├── delete-server.sh       # Server deletion script
 └── template/              # Server template
-├── Dockerfile
-├── docker-compose.yml
-└── supervisord.conf
+    ├── Dockerfile
+    ├── docker-compose.yml
+    └── supervisord.conf
+
 ~/minecraft-servers/       # Created automatically, lives outside the repo
 └── your-server
-├── .env               # Your server's configuration
-├── Dockerfile
-├── docker-compose.yml
-└── supervisord.conf
+    ├── .env               # Your server's configuration
+    ├── Dockerfile
+    ├── docker-compose.yml
+    └── supervisord.conf
+```
 
 ## Creating a Server
+
 ```bash
 ./create-server.sh
 ```
@@ -72,6 +80,7 @@ The script will ask for:
 It will then create the server folder, write the `.env`, build and boot the server.
 
 ## Deleting a Server
+
 ```bash
 ./delete-server.sh
 ```
@@ -85,14 +94,20 @@ Just run `./create-server.sh` again with a different name. Each server is fully 
 ## Connecting to a Server
 
 Players need to be on your Tailscale tailnet. Once they are, they connect using just the server name:
+
+```
 <SERVER_NAME>:25565
+```
 
 For example: `survival:25565`
 
 ## FileBrowser
 
 Each server has its own FileBrowser instance running at:
+
+```
 http://<SERVER_NAME>:8080
+```
 
 No login required — accessible only to people on your Tailscale tailnet.
 
@@ -111,7 +126,9 @@ From FileBrowser you can upload mods, edit configs, and manage all server files 
 ## Troubleshooting
 
 ### Permission denied connecting to Docker socket
+
 If you see `permission denied while trying to connect to the Docker daemon socket`, your user is not in the docker group. Fix it with:
+
 ```bash
 sudo usermod -aG docker $USER
 ```
@@ -119,20 +136,25 @@ sudo usermod -aG docker $USER
 Then log out and back in for the change to take effect.
 
 ### Scripts not executable
+
 If you see `permission denied` when running the scripts:
+
 ```bash
 chmod +x create-server.sh
 chmod +x delete-server.sh
 ```
 
 ### Template folder not found
+
 If the script says the template folder is missing, make sure you are running the scripts from inside the `aether/` folder:
+
 ```bash
 cd aether
 ./create-server.sh
 ```
 
 ### Tailscale auth failed
+
 Make sure you have created the `tag:minecraft` tag in Access Controls **before** generating the OAuth client. The tag must exist first or the auth key will be invalid.
 
 ## Disclosure
