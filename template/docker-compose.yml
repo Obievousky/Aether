@@ -24,6 +24,7 @@ services:
       args:
         NEOFORGE_VERSION: ${NEOFORGE_VERSION}
     image: aether:${NEOFORGE_VERSION}
+    pull_policy: never
     env_file:
       - .env
     network_mode: service:tailscale
